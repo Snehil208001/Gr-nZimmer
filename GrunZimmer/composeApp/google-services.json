@@ -12,7 +12,20 @@
           "package_name": "com.grunzimmer.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "83039503927-fpuok0n9q52g1q820n36m1mpor8o4v2i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.grunzimmer.app",
+            "certificate_hash": "70141e45096fc8f6a74228fbc3344019064d4b00"
+          }
+        },
+        {
+          "client_id": "83039503927-spn1acfn71kg1oqu6m39lilc274k06aa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCsoXQEbtQ99AL3-i0LHxtbuwik7tSRjwI"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "83039503927-spn1acfn71kg1oqu6m39lilc274k06aa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "83039503927-jeqrkublinjdqcnpqa9udv7oq9i99v7m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.grunzimmer.app"
+              }
+            }
+          ]
         }
       }
     }

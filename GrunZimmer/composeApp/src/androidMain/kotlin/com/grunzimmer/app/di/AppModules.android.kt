@@ -2,6 +2,7 @@ package com.grunzimmer.app.di
 
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -74,6 +75,16 @@ class AndroidAuthRepository : IAuthRepository {
             // This await() now requires the library added above
             auth.signInWithCredential(credential).await()
 
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): Result<Unit> {
+        return try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            auth.signInWithCredential(credential).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -14,6 +14,11 @@ interface IAuthRepository {
     suspend fun verifyOtp(code: String): Result<Unit>
 
     /**
+     * Authenticates with Google using the provided ID Token.
+     */
+    suspend fun signInWithGoogle(idToken: String): Result<Unit>
+
+    /**
      * Checks if a user is currently logged in.
      */
     fun isUserLoggedIn(): Boolean

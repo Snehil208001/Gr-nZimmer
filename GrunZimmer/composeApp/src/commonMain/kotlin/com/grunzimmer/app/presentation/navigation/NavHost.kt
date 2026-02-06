@@ -1,4 +1,3 @@
-// composeApp/src/commonMain/kotlin/com/grunzimmer/app/presentation/navigation/NavHost.kt
 package com.grunzimmer.app.presentation.navigation
 
 import androidx.compose.runtime.Composable
@@ -9,10 +8,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.grunzimmer.app.mainui.auth.ui.LoginScreen
 import com.grunzimmer.app.mainui.auth.ui.OtpVerificationScreen
+import com.grunzimmer.app.mainui.home.ui.HomeScreen
 import com.grunzimmer.app.mainui.onboarding.ui.OnboardingScreen
-import com.grunzimmer.app.mainui.profile.ui.ProfileSetupScreen // Import new screen
+import com.grunzimmer.app.mainui.profile.ui.ProfileSetupScreen
 import com.grunzimmer.app.mainui.splash.ui.SplashScreen
-// import com.grunzimmer.app.mainui.home.ui.HomeScreen // Use this when Home is ready
 
 @Composable
 fun AppNavigation(
@@ -24,7 +23,7 @@ fun AppNavigation(
         startDestination = Screens.Splash.route,
         modifier = modifier
     ) {
-        // ... (Splash and Onboarding remain unchanged) ...
+        // Splash Screen
         composable(route = Screens.Splash.route) {
             SplashScreen(
                 onSplashFinished = {
@@ -35,6 +34,7 @@ fun AppNavigation(
             )
         }
 
+        // Onboarding Screen
         composable(route = Screens.Onboarding.route) {
             OnboardingScreen(
                 onOnboardingFinished = {
@@ -45,20 +45,27 @@ fun AppNavigation(
             )
         }
 
+        // Login Screen
         composable(route = Screens.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
+                    // Navigate to OTP for phone auth
                     navController.navigate(Screens.OtpVerification.route)
+                },
+                onGoogleLoginSuccess = {
+                    // Navigate directly to Profile/Home for Google auth (Skipping OTP)
+                    navController.navigate(Screens.ProfileSetup.route) {
+                        popUpTo(Screens.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
 
-        // Update OTP Screen to navigate to Profile Setup
+        // OTP Verification Screen
         composable(route = Screens.OtpVerification.route) {
             OtpVerificationScreen(
                 onVerificationSuccess = {
                     navController.navigate(Screens.ProfileSetup.route) {
-                        // Optional: Clear back stack so user can't go back to OTP
                         popUpTo(Screens.Login.route) { inclusive = true }
                     }
                 },
@@ -68,11 +75,10 @@ fun AppNavigation(
             )
         }
 
-        // Add Profile Setup Route
+        // Profile Setup Screen
         composable(route = Screens.ProfileSetup.route) {
             ProfileSetupScreen(
                 onSaveAndContinue = {
-                    // Navigate to Home
                     navController.navigate(Screens.Home.route) {
                         popUpTo(Screens.ProfileSetup.route) { inclusive = true }
                     }
@@ -86,32 +92,19 @@ fun AppNavigation(
             )
         }
 
-        // Placeholder for Home
+        // Home Screen
         composable(route = Screens.Home.route) {
-            // HomeScreen() // Uncomment when HomeScreen is available
-            androidx.compose.material3.Text("Home Screen Placeholder")
-        }
-        // ... previous code inside NavHost ...
-
-        // Home Route (Updated)
-        composable(route = Screens.Home.route) {
-            com.grunzimmer.app.mainui.home.ui.HomeScreen(
+            HomeScreen(
                 onNavigateToServices = {
-                    // Navigate to Service Listing
-                    // Assuming ServiceListingScreen is mapped to a route, e.g., "service_listing"
-                    // If not defined in Screens.kt yet, you might need to add it.
-                    // For now, based on your files, I'll assume you might use a specific route or placeholder
+                    // Placeholder: Add route for service listing if available
                     // navController.navigate(Screens.ServiceListing.route)
-                    // Since I cannot see Screens.ServiceListing, I will log or placeholder:
                     println("Navigate to Services")
                 },
                 onNavigateToOrders = {
                     println("Navigate to Orders")
                 },
                 onNavigateToProfile = {
-                    // Navigate to Profile View (Not Setup)
-                    // If you have a ProfileView screen, navigate there.
-                    // If you want to go back to Setup for demo:
+                    // For now, navigating back to setup as a profile view placeholder
                     navController.navigate(Screens.ProfileSetup.route)
                 }
             )

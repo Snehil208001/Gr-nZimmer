@@ -7,12 +7,32 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices) // Ensure this is applied
+    kotlin("native.cocoapods") // Added for iOS Google Sign In Interop
 }
 
 kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
+
+    // CocoaPods Configuration for iOS Google Sign In
+    cocoapods {
+        summary = "ComposeApp"
+        homepage = "https://github.com/grunzimmer"
+        version = "1.0"
+        ios.deploymentTarget = "15.0" // Standard modern target
+
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+
+        // The native Google Sign In SDK for iOS
+        pod("GoogleSignIn") {
+            version = "7.1.0"
+            extraOpts += listOf("-compiler-option", "-fmodules")
         }
     }
 
@@ -35,6 +55,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.kotlinx.coroutines.play.services)
             implementation(libs.firebase.auth.android) // Native Android SDK
+            implementation(libs.play.services.auth)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

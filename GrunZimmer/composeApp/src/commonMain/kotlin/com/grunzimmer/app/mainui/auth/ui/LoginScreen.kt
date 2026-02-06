@@ -13,7 +13,7 @@ import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue // Fixes property delegate error
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -44,15 +44,26 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    // Add generic callback for full login (skips OTP)
+    onGoogleLoginSuccess: () -> Unit = {}
 ) {
     // Injects the ViewModel
     val viewModel = koinViewModel<AuthViewModel>()
     val state by viewModel.uiState.collectAsState()
 
+    // Handle OTP Flow Success (Phone)
     LaunchedEffect(state.isOtpSent) {
         if (state.isOtpSent) {
             onLoginSuccess()
+            viewModel.resetState()
+        }
+    }
+
+    // Handle Google Login Success
+    LaunchedEffect(state.isGoogleLoginSuccess) {
+        if (state.isGoogleLoginSuccess) {
+            onGoogleLoginSuccess()
             viewModel.resetState()
         }
     }
@@ -69,6 +80,17 @@ fun LoginScreen(
     val prefixBgColor = if (isDark) Color.White.copy(alpha = 0.05f) else SageLight.copy(alpha = 0.3f)
 
     var phoneNumber by remember { mutableStateOf("") }
+
+    // --- Google Sign In Launcher ---
+    val launchGoogleSignIn = rememberGoogleSignInLauncher(
+        onResult = { token ->
+            if (token != null) {
+                viewModel.signInWithGoogle(token)
+            } else {
+                // Handle cancellation or error if needed
+            }
+        }
+    )
 
     Box(
         modifier = Modifier
@@ -313,7 +335,7 @@ fun LoginScreen(
 
                 // Secondary Action: Google
                 Button(
-                    onClick = { /* TODO: Implement Google Auth */ },
+                    onClick = { launchGoogleSignIn() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -383,3 +405,16 @@ fun LoginScreen(
         }
     }
 }
+
+/**
+ * Cross-platform launcher for Google Sign In.
+ * On Android, this manages the Intent launch and result handling.
+ * On iOS, this should handle the relevant view controller presentation.
+ *
+ * @param onResult Callback with the ID Token if successful, or null if failed/cancelled.
+ * @return A lambda to trigger the sign-in flow.
+ */
+@Composable
+expect fun rememberGoogleSignInLauncher(
+    onResult: (String?) -> Unit
+): () -> Unit

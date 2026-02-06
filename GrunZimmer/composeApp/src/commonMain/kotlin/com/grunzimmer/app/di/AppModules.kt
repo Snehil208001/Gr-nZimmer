@@ -10,7 +10,8 @@ import org.koin.dsl.module
 val appModule = module {
     factory { SendOtpUseCase(get()) }
     factory { VerifyOtpUseCase(get()) }
-    factory { AuthViewModel(get(), get()) }
+    // Updated to pass repository (get()) as 3rd argument
+    factory { AuthViewModel(get(), get(), get()) }
 }
 
 // 2. Expect a Platform Module (For the Repository)
