@@ -1,4 +1,3 @@
-// composeApp/src/commonMain/kotlin/com/grunzimmer/app/presentation/navigation/Screens.kt
 package com.grunzimmer.app.presentation.navigation
 
 sealed class Screens(val route: String) {
@@ -6,7 +5,11 @@ sealed class Screens(val route: String) {
     data object Onboarding : Screens("onboarding")
     data object Login : Screens("login")
     data object OtpVerification : Screens("otp_verification")
-    data object ProfileSetup : Screens("profile_setup") // Added New Route
+    data object ProfileSetup : Screens("profile_setup")
     data object Home : Screens("home")
-    data object ServiceListing : Screens("service_listing")
+
+    // New Route for Service Details
+    data object ServiceDetail : Screens("service_detail/{serviceId}") {
+        fun createRoute(serviceId: String) = "service_detail/$serviceId"
+    }
 }

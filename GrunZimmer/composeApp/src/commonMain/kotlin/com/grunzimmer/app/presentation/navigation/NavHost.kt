@@ -3,14 +3,17 @@ package com.grunzimmer.app.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.grunzimmer.app.mainui.auth.ui.LoginScreen
 import com.grunzimmer.app.mainui.auth.ui.OtpVerificationScreen
 import com.grunzimmer.app.mainui.home.ui.HomeScreen
 import com.grunzimmer.app.mainui.onboarding.ui.OnboardingScreen
 import com.grunzimmer.app.mainui.profile.ui.ProfileSetupScreen
+import com.grunzimmer.app.mainui.services.ui.ServiceDetailScreen
 import com.grunzimmer.app.mainui.splash.ui.SplashScreen
 
 @Composable
@@ -49,11 +52,9 @@ fun AppNavigation(
         composable(route = Screens.Login.route) {
             LoginScreen(
                 onLoginSuccess = {
-                    // Navigate to OTP for phone auth
                     navController.navigate(Screens.OtpVerification.route)
                 },
                 onGoogleLoginSuccess = {
-                    // Navigate directly to Profile/Home for Google auth (Skipping OTP)
                     navController.navigate(Screens.ProfileSetup.route) {
                         popUpTo(Screens.Login.route) { inclusive = true }
                     }
@@ -92,21 +93,29 @@ fun AppNavigation(
             )
         }
 
-        // Home Screen
+        // Home Screen - Acts as Main Dashboard
         composable(route = Screens.Home.route) {
             HomeScreen(
-                onNavigateToServices = {
-                    // Placeholder: Add route for service listing if available
-                    // navController.navigate(Screens.ServiceListing.route)
-                    println("Navigate to Services")
-                },
-                onNavigateToOrders = {
-                    println("Navigate to Orders")
-                },
                 onNavigateToProfile = {
-                    // For now, navigating back to setup as a profile view placeholder
+                    // This handles specific "Full Profile Setup" navigation if accessed from Profile tab
                     navController.navigate(Screens.ProfileSetup.route)
+                },
+                onNavigateToServiceDetail = { serviceId ->
+                    navController.navigate(Screens.ServiceDetail.createRoute(serviceId))
                 }
+            )
+        }
+
+        // Service Detail Screen
+        composable(
+            route = Screens.ServiceDetail.route,
+            arguments = listOf(navArgument("serviceId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val serviceId = backStackEntry.arguments?.getString("serviceId") ?: ""
+            ServiceDetailScreen(
+                serviceId = serviceId,
+                onBackClick = { navController.popBackStack() },
+                onScheduleVisitClick = { /* Handle Booking Logic later */ }
             )
         }
     }
