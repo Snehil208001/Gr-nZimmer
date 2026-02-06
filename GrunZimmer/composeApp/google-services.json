@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83039503927",
+    "project_id": "grunzimmer-79e25",
+    "storage_bucket": "grunzimmer-79e25.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83039503927:android:cacd95393ff18f4a4aa1b2",
+        "android_client_info": {
+          "package_name": "com.grunzimmer.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsoXQEbtQ99AL3-i0LHxtbuwik7tSRjwI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

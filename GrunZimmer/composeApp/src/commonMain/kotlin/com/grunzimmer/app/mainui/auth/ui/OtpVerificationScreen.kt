@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue // Fixes property delegate error
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,17 +32,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.grunzimmer.app.mainui.auth.viewmodel.AuthViewModel
 import com.grunzimmer.app.presentation.theme.*
 import grunzimmer.composeapp.generated.resources.Res
 import grunzimmer.composeapp.generated.resources.login_bg
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
+// Correct Import for Koin 4.0+
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun OtpVerificationScreen(
     onVerificationSuccess: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    val viewModel = koinViewModel<AuthViewModel>()
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(state.isVerified) {
+        if (state.isVerified) {
+            onVerificationSuccess()
+        }
+    }
+
     val isDark = isSystemInDarkTheme()
 
     // Theme Colors
@@ -144,10 +159,7 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             val subtitle = buildAnnotatedString {
-                append("Enter the 6-digit code sent to \n")
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = if (isDark) Color.White else primaryColor)) {
-                    append("+91 98765 43210")
-                }
+                append("Enter the 6-digit code sent to your phone\n")
             }
 
             Text(
@@ -163,7 +175,6 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             // OTP Input Fields
-            // We use a hidden BasicTextField to capture input, and draw the boxes manually based on the text
             BasicTextField(
                 value = otpValue,
                 onValueChange = { if (it.length <= otpLength && it.all { char -> char.isDigit() }) otpValue = it },
@@ -181,7 +192,7 @@ fun OtpVerificationScreen(
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .aspectRatio(0.85f) // Matches w-48px h-56px ratio approx
+                                    .aspectRatio(0.85f)
                                     .clip(RoundedCornerShape(8.dp))
                                     .background(inputBgColor)
                                     .border(
@@ -205,6 +216,15 @@ fun OtpVerificationScreen(
                 }
             )
 
+            if (state.error != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = state.error!!,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             // Action Buttons
@@ -215,7 +235,12 @@ fun OtpVerificationScreen(
             ) {
                 // Verify Button
                 Button(
-                    onClick = onVerificationSuccess,
+                    onClick = {
+                        if (otpValue.length == otpLength) {
+                            viewModel.verifyOtp(otpValue)
+                        }
+                    },
+                    enabled = !state.isLoading && otpValue.length == otpLength,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -229,20 +254,27 @@ fun OtpVerificationScreen(
                         pressedElevation = 2.dp
                     )
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Verify & Continue",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 17.sp
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Verify & Continue",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 17.sp
+                                )
                             )
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.Rounded.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
 
@@ -276,6 +308,7 @@ fun OtpVerificationScreen(
                             .clickable(enabled = timeLeft == 0) {
                                 timeLeft = 25
                                 isTimerRunning = true
+                                // TODO: Trigger resend logic in ViewModel
                             }
                     )
                 }

@@ -10,9 +10,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Spa // Updated Import
+import androidx.compose.material.icons.rounded.Spa
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue // Fixes property delegate error
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -31,15 +32,31 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.grunzimmer.app.mainui.auth.viewmodel.AuthViewModel
 import com.grunzimmer.app.presentation.theme.*
 import grunzimmer.composeapp.generated.resources.Res
 import grunzimmer.composeapp.generated.resources.login_bg
 import org.jetbrains.compose.resources.painterResource
+// Correct Import for Koin 4.0+
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit
 ) {
+    // Injects the ViewModel
+    val viewModel = koinViewModel<AuthViewModel>()
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(state.isOtpSent) {
+        if (state.isOtpSent) {
+            onLoginSuccess()
+            viewModel.resetState()
+        }
+    }
+
     val isDark = isSystemInDarkTheme()
 
     // Theme Colors
@@ -93,7 +110,6 @@ fun LoginScreen(
                         .border(1.dp, Sage.copy(alpha = 0.3f), RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Updated to use the Splash Screen logo (Spa/Leaf)
                     Icon(
                         imageVector = Icons.Rounded.Spa,
                         contentDescription = "Logo",
@@ -230,9 +246,23 @@ fun LoginScreen(
                     }
                 }
 
+                if (state.error != null) {
+                    Text(
+                        text = state.error!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
                 // Primary Action Button
                 Button(
-                    onClick = { onLoginSuccess() },
+                    onClick = {
+                        if (phoneNumber.isNotEmpty()) {
+                            viewModel.sendOtp("+91$phoneNumber")
+                        }
+                    },
+                    enabled = !state.isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -246,14 +276,21 @@ fun LoginScreen(
                         pressedElevation = 2.dp
                     )
                 ) {
-                    Text(
-                        text = "Send OTP",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            letterSpacing = 0.5.sp
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
                         )
-                    )
+                    } else {
+                        Text(
+                            text = "Send OTP",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                letterSpacing = 0.5.sp
+                            )
+                        )
+                    }
                 }
 
                 // Separator

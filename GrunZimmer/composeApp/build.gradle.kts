@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.googleServices) // Ensure this is applied
 }
 
 kotlin {
@@ -29,22 +30,30 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+
+            // --- ANDROID SPECIFIC DEPENDENCIES ---
+            implementation(libs.koin.android)
+            implementation(libs.kotlinx.coroutines.play.services)
+            implementation(libs.firebase.auth.android) // Native Android SDK
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
-            // Added Icons
             implementation(libs.compose.materialIconsExtended)
-
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-
-            // Added Navigation
             implementation(libs.jetbrains.compose.navigation)
+
+            // --- COMMON DEPENDENCIES ---
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.firebase.auth) // GitLive wrapper
+            implementation(libs.firebase.common)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

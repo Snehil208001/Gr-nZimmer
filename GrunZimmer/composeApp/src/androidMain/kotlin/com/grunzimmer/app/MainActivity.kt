@@ -12,8 +12,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        // Register Activity for Phone Auth
+        ActivityProvider.setActivity(this)
+
         setContent {
             App()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clean up to prevent leaks
+        if (ActivityProvider.getActivity() == this) {
+            ActivityProvider.setActivity(this) // keeping it simple or set null
         }
     }
 }
