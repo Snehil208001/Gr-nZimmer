@@ -2,7 +2,7 @@ package com.grunzimmer.app.mainui.services.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border  // <--- ADDED THIS IMPORT
+import androidx.compose.foundation.border // <--- ADDED THIS IMPORT
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,38 +20,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.grunzimmer.app.mainui.services.viewmodel.ServiceDetailViewModel
 import com.grunzimmer.app.presentation.theme.BackgroundLight
 import com.grunzimmer.app.presentation.theme.LoginPrimary
 import grunzimmer.composeapp.generated.resources.Res
-import grunzimmer.composeapp.generated.resources.inspiration_2
 import grunzimmer.composeapp.generated.resources.servicedetail
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ServiceDetailScreen(
-    serviceId: String,
+fun TerraceGardenScreen(
     onBackClick: () -> Unit,
     onScheduleVisitClick: () -> Unit
 ) {
-    val viewModel = koinViewModel<ServiceDetailViewModel>()
-
-    val heroImage = if (serviceId == "2") {
-        Res.drawable.inspiration_2
-    } else {
-        Res.drawable.servicedetail
-    }
-
-    val serviceTitle = if (serviceId == "2") "Balcony Garden Setup" else "Terrace Garden Setup"
-
     var areaSize by remember { mutableStateOf("") }
     var selectedSunlight by remember { mutableStateOf("Medium") }
     var budgetExpanded by remember { mutableStateOf(false) }
@@ -65,14 +50,11 @@ fun ServiceDetailScreen(
                     .fillMaxWidth()
                     .background(BackgroundLight.copy(alpha = 0.9f))
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = onBackClick,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(Color.Transparent)
+                    modifier = Modifier.clip(CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -80,13 +62,15 @@ fun ServiceDetailScreen(
                         tint = LoginPrimary
                     )
                 }
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = serviceTitle,
+                    text = "Terrace Garden Setup",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF121714)
                 )
-                Spacer(modifier = Modifier.size(40.dp))
+                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.size(48.dp))
             }
         },
         bottomBar = {
@@ -95,45 +79,26 @@ fun ServiceDetailScreen(
                     .fillMaxWidth()
                     .background(Color.White)
                     .padding(16.dp)
-                    .padding(bottom = 16.dp)
-                    .shadow(elevation = 20.dp, spotColor = Color.Black.copy(alpha = 0.05f))
+                    .shadow(elevation = 20.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Payments,
-                        contentDescription = null,
-                        tint = LoginPrimary,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Icon(Icons.Default.Payments, null, tint = LoginPrimary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "STARTING FROM ₹25,000",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = LoginPrimary,
-                        letterSpacing = 0.5.sp
-                    )
+                    Text("STARTING FROM ₹25,000", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = LoginPrimary)
                 }
                 Button(
                     onClick = onScheduleVisitClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .shadow(10.dp, spotColor = LoginPrimary.copy(alpha = 0.3f)),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = LoginPrimary)
                 ) {
-                    Text(
-                        text = "Request Site Visit",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text("Request Site Visit", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, null)
                 }
             }
         }
@@ -152,21 +117,16 @@ fun ServiceDetailScreen(
                     .clip(RoundedCornerShape(16.dp))
             ) {
                 Image(
-                    painter = painterResource(heroImage),
-                    contentDescription = serviceTitle,
+                    painter = painterResource(Res.drawable.servicedetail),
+                    contentDescription = "Terrace Garden",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.1f))))
                 )
             }
 
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
-                    text = if (serviceId == "2") "Cozy green corners for your compact spaces" else "Transform your empty roof into a lush sanctuary",
+                    text = "Transform your empty roof into a lush sanctuary",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF121714),
@@ -174,7 +134,7 @@ fun ServiceDetailScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "We handle everything from soil preparation to custom seating for your perfect urban oasis. Enjoy a stress-free setup.",
+                    text = "We handle everything from soil preparation to custom seating for your perfect urban oasis.",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color(0xFF688274),
@@ -183,13 +143,7 @@ fun ServiceDetailScreen(
             }
 
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                Text(
-                    text = "What's Included",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF121714),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Text("What's Included", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF121714), modifier = Modifier.padding(bottom = 16.dp))
 
                 val includedItems = listOf(
                     SimpleIncludedItem(Icons.Default.DesignServices, "Design Consultation"),
@@ -211,13 +165,7 @@ fun ServiceDetailScreen(
             }
 
             Column(modifier = Modifier.padding(20.dp)) {
-                Text(
-                    text = "Your Area Details",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF121714),
-                    modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
-                )
+                Text("Your Terrace Details", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF121714), modifier = Modifier.padding(vertical = 16.dp))
 
                 FormLabel("Area size")
                 OutlinedTextField(
@@ -228,44 +176,30 @@ fun ServiceDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White,
                         unfocusedBorderColor = Color(0xFFDDE4E0),
                         focusedBorderColor = LoginPrimary
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
-                Spacer(modifier = Modifier.height(20.dp))
 
+                Spacer(modifier = Modifier.height(20.dp))
                 FormLabel("Sunlight")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     SelectableChip("Low", selectedSunlight == "Low") { selectedSunlight = "Low" }
                     SelectableChip("Medium", selectedSunlight == "Medium") { selectedSunlight = "Medium" }
                     SelectableChip("High", selectedSunlight == "High") { selectedSunlight = "High" }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
 
+                Spacer(modifier = Modifier.height(20.dp))
                 FormLabel("Budget range")
                 Box(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
                         value = selectedBudget,
                         onValueChange = {},
                         readOnly = true,
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                                modifier = Modifier.clickable { budgetExpanded = true }
-                            )
-                        },
+                        trailingIcon = { Icon(Icons.Default.ArrowDropDown, null, Modifier.clickable { budgetExpanded = true }) },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White,
-                            unfocusedBorderColor = Color(0xFFDDE4E0),
-                            focusedBorderColor = LoginPrimary
-                        )
+                        shape = RoundedCornerShape(12.dp)
                     )
                     DropdownMenu(
                         expanded = budgetExpanded,
@@ -274,34 +208,6 @@ fun ServiceDetailScreen(
                     ) {
                         DropdownMenuItem(text = { Text("₹25,000 - ₹50,000") }, onClick = { selectedBudget = "₹25,000 - ₹50,000"; budgetExpanded = false })
                         DropdownMenuItem(text = { Text("₹50,000 - ₹1,00,000") }, onClick = { selectedBudget = "₹50,000 - ₹1,00,000"; budgetExpanded = false })
-                        DropdownMenuItem(text = { Text("₹1,00,000+") }, onClick = { selectedBudget = "₹1,00,000+"; budgetExpanded = false })
-                    }
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                FormLabel("Area Photos")
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(2.dp, Color(0xFFDDE4E0), RoundedCornerShape(12.dp))
-                        .background(Color.White, RoundedCornerShape(12.dp))
-                        .clickable { /* Handle Upload */ }
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(LoginPrimary.copy(alpha = 0.1f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.AddAPhoto, null, tint = LoginPrimary)
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Upload from Gallery", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = LoginPrimary)
-                        Text("Optional", fontSize = 12.sp, color = Color.Gray)
                     }
                 }
 

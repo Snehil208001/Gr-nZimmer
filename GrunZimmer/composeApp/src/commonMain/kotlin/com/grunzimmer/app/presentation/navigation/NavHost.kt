@@ -10,10 +10,21 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.grunzimmer.app.mainui.auth.ui.LoginScreen
 import com.grunzimmer.app.mainui.auth.ui.OtpVerificationScreen
+import com.grunzimmer.app.mainui.booking.ui.BookingSuccessScreen
+import com.grunzimmer.app.mainui.booking.ui.QuotationReviewScreen
+import com.grunzimmer.app.mainui.booking.ui.ScheduleSiteVisitScreen
 import com.grunzimmer.app.mainui.home.ui.HomeScreen
 import com.grunzimmer.app.mainui.onboarding.ui.OnboardingScreen
+import com.grunzimmer.app.mainui.profile.ui.AddressDetailsScreen
+import com.grunzimmer.app.mainui.profile.ui.MaintenancePlansScreen
 import com.grunzimmer.app.mainui.profile.ui.ProfileSetupScreen
+import com.grunzimmer.app.mainui.profile.ui.PropertyTypeScreen
+import com.grunzimmer.app.mainui.services.ui.BalconyGardenScreen
+import com.grunzimmer.app.mainui.services.ui.GardenMaintenanceScreen
+import com.grunzimmer.app.mainui.services.ui.KitchenGardenScreen
 import com.grunzimmer.app.mainui.services.ui.ServiceDetailScreen
+import com.grunzimmer.app.mainui.services.ui.TerraceGardenScreen
+import com.grunzimmer.app.mainui.services.ui.VerticalGardenScreen
 import com.grunzimmer.app.mainui.splash.ui.SplashScreen
 
 @Composable
@@ -93,20 +104,125 @@ fun AppNavigation(
             )
         }
 
-        // Home Screen - Acts as Main Dashboard
+        // Home Screen
         composable(route = Screens.Home.route) {
             HomeScreen(
                 onNavigateToProfile = {
-                    // This handles specific "Full Profile Setup" navigation if accessed from Profile tab
                     navController.navigate(Screens.ProfileSetup.route)
                 },
                 onNavigateToServiceDetail = { serviceId ->
-                    navController.navigate(Screens.ServiceDetail.createRoute(serviceId))
+                    when (serviceId) {
+                        "1" -> navController.navigate(Screens.TerraceGarden.route)
+                        "2" -> navController.navigate(Screens.BalconyGarden.route)
+                        "3" -> navController.navigate(Screens.VerticalGarden.route)
+                        "4" -> navController.navigate(Screens.KitchenGarden.route)
+                        "5" -> navController.navigate(Screens.GardenMaintenance.route)
+                        else -> navController.navigate(Screens.ServiceDetail.createRoute(serviceId))
+                    }
+                },
+                onNavigateToAddress = {
+                    navController.navigate(Screens.AddressDetails.route)
+                },
+                onNavigateToPropertyType = {
+                    navController.navigate(Screens.PropertyType.route)
+                },
+                onNavigateToMaintenancePlans = {
+                    navController.navigate(Screens.MaintenancePlans.route)
+                },
+                onNavigateToQuotation = { // <--- Added logic
+                    navController.navigate(Screens.QuotationReview.route)
                 }
             )
         }
 
-        // Service Detail Screen
+        // Service Screens
+        composable(route = Screens.TerraceGarden.route) {
+            TerraceGardenScreen(
+                onBackClick = { navController.popBackStack() },
+                onScheduleVisitClick = { navController.navigate(Screens.ScheduleSiteVisit.route) }
+            )
+        }
+        composable(route = Screens.BalconyGarden.route) {
+            BalconyGardenScreen(
+                onBackClick = { navController.popBackStack() },
+                onScheduleVisitClick = { navController.navigate(Screens.ScheduleSiteVisit.route) }
+            )
+        }
+        composable(route = Screens.VerticalGarden.route) {
+            VerticalGardenScreen(
+                onBackClick = { navController.popBackStack() },
+                onScheduleVisitClick = { navController.navigate(Screens.ScheduleSiteVisit.route) }
+            )
+        }
+        composable(route = Screens.KitchenGarden.route) {
+            KitchenGardenScreen(
+                onBackClick = { navController.popBackStack() },
+                onScheduleVisitClick = { navController.navigate(Screens.ScheduleSiteVisit.route) }
+            )
+        }
+        composable(route = Screens.GardenMaintenance.route) {
+            GardenMaintenanceScreen(
+                onBackClick = { navController.popBackStack() },
+                onRescheduleClick = { /* Handle Reschedule */ },
+                onGetHelpClick = { /* Handle Help */ }
+            )
+        }
+
+        // Profile Detail Screens
+        composable(route = Screens.AddressDetails.route) {
+            AddressDetailsScreen(
+                onBackClick = { navController.popBackStack() },
+                onSaveAddressClick = { navController.popBackStack() }
+            )
+        }
+        composable(route = Screens.PropertyType.route) {
+            PropertyTypeScreen(
+                onBackClick = { navController.popBackStack() },
+                onSaveClick = { navController.popBackStack() }
+            )
+        }
+        composable(route = Screens.MaintenancePlans.route) {
+            MaintenancePlansScreen(
+                onBackClick = { navController.popBackStack() },
+                onSelectPlan = { navController.popBackStack() }
+            )
+        }
+
+        // Booking Screens
+        composable(route = Screens.ScheduleSiteVisit.route) {
+            ScheduleSiteVisitScreen(
+                onBackClick = { navController.popBackStack() },
+                onConfirmClick = {
+                    navController.navigate(Screens.BookingSuccess.route) {
+                        popUpTo(Screens.ScheduleSiteVisit.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(route = Screens.BookingSuccess.route) {
+            BookingSuccessScreen(
+                onGoToDashboard = {
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(Screens.Home.route) { inclusive = true }
+                    }
+                },
+                onClose = {
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(Screens.Home.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(route = Screens.QuotationReview.route) {
+            QuotationReviewScreen(
+                onBackClick = { navController.popBackStack() },
+                onApproveClick = { /* Handle Approval */ },
+                onRequestChangesClick = { /* Handle Changes */ }
+            )
+        }
+
+        // Generic Service Detail
         composable(
             route = Screens.ServiceDetail.route,
             arguments = listOf(navArgument("serviceId") { type = NavType.StringType })
@@ -115,7 +231,7 @@ fun AppNavigation(
             ServiceDetailScreen(
                 serviceId = serviceId,
                 onBackClick = { navController.popBackStack() },
-                onScheduleVisitClick = { /* Handle Booking Logic later */ }
+                onScheduleVisitClick = { navController.navigate(Screens.ScheduleSiteVisit.route) }
             )
         }
     }

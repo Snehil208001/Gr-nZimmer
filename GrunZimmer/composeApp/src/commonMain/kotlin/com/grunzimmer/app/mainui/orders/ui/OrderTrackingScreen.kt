@@ -60,6 +60,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun OrderTrackingScreen(
     onBackClick: () -> Unit,
+    onViewQuotationClick: () -> Unit, // <--- Added callback
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -104,7 +105,7 @@ fun OrderTrackingScreen(
                     .padding(20.dp)
             ) {
                 Button(
-                    onClick = { /* View Quotation */ },
+                    onClick = onViewQuotationClick, // <--- Connected callback here
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
@@ -164,7 +165,7 @@ fun OrderTrackingScreen(
                     date = "Oct 25, 02:30 PM",
                     expertName = "Rahul Verma",
                     expertRole = "Senior Botanist",
-                    expertImage = Res.drawable.orderexpert, // Using this as the botanist image
+                    expertImage = Res.drawable.orderexpert,
                     isLast = false
                 )
                 TimelineItem(
@@ -265,7 +266,7 @@ fun TimelineItem(
     icon: ImageVector = Icons.Default.Check,
     expertName: String? = null,
     expertRole: String? = null,
-    expertImage: DrawableResource? = null, // Added parameter
+    expertImage: DrawableResource? = null,
     badge: String? = null
 ) {
     Row(

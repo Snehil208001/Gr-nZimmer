@@ -53,6 +53,8 @@ import com.grunzimmer.app.presentation.theme.LoginPrimary
 @Composable
 fun ProfileScreen(
     onNavigateToAddress: () -> Unit = {},
+    onNavigateToPropertyType: () -> Unit = {},
+    onNavigateToMaintenancePlans: () -> Unit = {}, // <--- Added
     onNavigateToOrders: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
@@ -159,7 +161,7 @@ fun ProfileScreen(
                         icon = Icons.Default.Deck,
                         title = "Property type",
                         subtitle = "Terrace & Balcony details",
-                        onClick = {}
+                        onClick = onNavigateToPropertyType
                     )
                 ),
                 surfaceColor = surfaceColor,
@@ -179,7 +181,7 @@ fun ProfileScreen(
                     SettingsItemData(
                         icon = Icons.Default.Yard,
                         title = "Maintenance plans",
-                        onClick = {}
+                        onClick = onNavigateToMaintenancePlans // <--- Connected callback
                     )
                 ),
                 surfaceColor = surfaceColor,
@@ -284,7 +286,6 @@ fun SettingsGroup(
     mutedTextColor: Color
 ) {
     Column(modifier = Modifier.padding(bottom = 24.dp)) {
-        // FIXED: .uppercase() called on the string, not modifier
         Text(
             text = title.uppercase(),
             fontSize = 12.sp,
@@ -356,7 +357,6 @@ fun SettingsItem(
                     )
                 }
             }
-            // FIXED: Using KeyboardArrowRight
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,

@@ -49,7 +49,11 @@ enum class HomeTab {
 @Composable
 fun HomeScreen(
     onNavigateToProfile: () -> Unit,
-    onNavigateToServiceDetail: (String) -> Unit // New callback
+    onNavigateToServiceDetail: (String) -> Unit,
+    onNavigateToAddress: () -> Unit,
+    onNavigateToPropertyType: () -> Unit,
+    onNavigateToMaintenancePlans: () -> Unit,
+    onNavigateToQuotation: () -> Unit // <--- Added parameter
 ) {
     val isDark = isSystemInDarkTheme()
     var currentTab by remember { mutableStateOf(HomeTab.HOME) }
@@ -98,18 +102,21 @@ fun HomeScreen(
                     ServiceListingScreen(
                         onBackClick = { currentTab = HomeTab.HOME },
                         onServiceClick = { serviceId ->
-                            onNavigateToServiceDetail(serviceId) // Navigate to Detail
+                            onNavigateToServiceDetail(serviceId)
                         }
                     )
                 }
                 HomeTab.ORDERS -> {
                     OrderTrackingScreen(
-                        onBackClick = { currentTab = HomeTab.HOME }
+                        onBackClick = { currentTab = HomeTab.HOME },
+                        onViewQuotationClick = onNavigateToQuotation // <--- Passed it here
                     )
                 }
                 HomeTab.PROFILE -> {
                     ProfileScreen(
-                        onNavigateToAddress = { /* Navigate to Address Edit */ },
+                        onNavigateToAddress = onNavigateToAddress,
+                        onNavigateToPropertyType = onNavigateToPropertyType,
+                        onNavigateToMaintenancePlans = onNavigateToMaintenancePlans,
                         onNavigateToOrders = { currentTab = HomeTab.ORDERS },
                         onLogout = { /* Handle Logout Logic */ }
                     )
